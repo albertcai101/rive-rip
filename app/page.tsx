@@ -130,6 +130,14 @@ export default function Home() {
         setDimensions({ width: targetDimensions.width, height: targetDimensions.height });
     };
 
+    const togglePlayback = () => {
+        const active = animationList?.active;
+        if (active) {
+            !isPlaying && riveAnimation?.play(active);
+            isPlaying && riveAnimation?.pause(active);
+        }
+    };
+
     const setAnimationWithBuffer = (buffer: string | ArrayBuffer | null) => {
         if (!buffer) return;
 
@@ -345,10 +353,7 @@ export default function Home() {
                         </CardHeader>
                         <CardContent className="grid gap-4">
                             <Button
-                                onClick={() => {
-                                    if (!riveAnimation) return;
-                                    isPlaying ? riveAnimation.pause() : riveAnimation.play();
-                                }}
+                                onClick={() => togglePlayback}
                                 disabled={status.current !== PlayerState.Active}
                             >
                                 {status.current !== PlayerState.Active ? "Play/Pause" : isPlaying ? 'Pause' : 'Play'}
