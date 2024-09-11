@@ -62,32 +62,40 @@ export default function Home() {
     const [dimensions, setDimensions] = useState<Dimensions>({ width: 0, height: 0 });
     
     useEffect(() => {
-        console.log('riveAnimation useffect setting up event listeners');
-        console.log('riveAnimation: ', riveAnimation);
-        riveAnimation?.on(EventType.Load, () => {
-            // TODO: stuff on successful load
+        if (!riveAnimation) return;
+
+        const handleLoad = () => {
             getAnimationList();
             getStateMachineList();
-            console.log("riveAnimation eventlistener on load is setting status to active");
             setStatus({ current: PlayerState.Active, error: null });
+        };
 
-            // const stateMachines = riveAnimation.stateMachineNames;
-            // for (const stateMachine of stateMachines) {
-            //     console.log('state machine inputs for ', stateMachine, ': ', riveAnimation.stateMachineInputs(stateMachine));
-            // }
-        });
-        riveAnimation?.on(EventType.LoadError, () => {
-            console.log("riveAnimation eventlistener on load error is setting status to error");
+        const handleLoadError = () => {
             setStatus({ current: PlayerState.Error, error: PlayerError.NoAnimation });
-        });
-        riveAnimation?.on(EventType.Play, () => setIsPlaying(true));
-        riveAnimation?.on(EventType.Pause, () => setIsPlaying(false));
-        riveAnimation?.on(EventType.Stop, () => setIsPlaying(false));
-            
+        };
+
+        const handlePlay = () => setIsPlaying(true);
+        const handlePause = () => setIsPlaying(false);
+        const handleStop = () => setIsPlaying(false);
+
+        riveAnimation.on(EventType.Load, handleLoad);
+        riveAnimation.on(EventType.LoadError, handleLoadError);
+        riveAnimation.on(EventType.Play, handlePlay);
+        riveAnimation.on(EventType.Pause, handlePause);
+        riveAnimation.on(EventType.Stop, handleStop);
+
+        return () => {
+            if (riveAnimation) {
+                riveAnimation.off(EventType.Load, handleLoad);
+                riveAnimation.off(EventType.LoadError, handleLoadError);
+                riveAnimation.off(EventType.Play, handlePlay);
+                riveAnimation.off(EventType.Pause, handlePause);
+                riveAnimation.off(EventType.Stop, handleStop);
+            }
+        };
     }, [riveAnimation]);
 
     useEffect(() => {
-        console.log('status: ', status);
         if (status.current === PlayerState.Error && status.error !== null) {
             reset();
             fireErrorToast();
@@ -136,7 +144,6 @@ export default function Home() {
 
 
         try {
-            console.log('setting animation with buffer');
             setRiveAnimation(new Rive({
                 buffer: buffer as ArrayBuffer,
                 canvas: canvasRef.current!,
@@ -146,10 +153,8 @@ export default function Home() {
                     alignment: Alignment.Center,
                 }),
             }));
-            console.log("setAnimationWithBuffer is setting status to active");
             setStatus({ current: PlayerState.Active });
         } catch (e) {
-            console.log("setAnimationWithBuffer is setting status to error");
             setStatus({ current: PlayerState.Error, error: PlayerError.NoAnimation });
         }
     };
@@ -164,7 +169,6 @@ export default function Home() {
     };
 
     const reset = () => {
-        console.log('resetting');
         setIsPlaying(true);
         setFilename(null);
         setRiveAnimation(null);
@@ -173,6 +177,22 @@ export default function Home() {
         setStatus({ ...status, current: PlayerState.Idle });
         clearCanvas();
     };
+
+    const setActiveAnimation = (animation: string) => {
+        if (!riveAnimation) return;
+        if (!animationList) return;
+        if (animation === animationList?.active) return;
+
+        clearCanvas();
+        if (riveAnimation) {
+            riveAnimation.stop(animationList?.active);
+            setAnimationList({
+                ...animationList,
+                active: animation,
+            });
+            riveAnimation.play(animation);
+        }
+    }
 
     const getAnimationList = () => {
         const animations = riveAnimation?.animationNames;
@@ -230,12 +250,7 @@ export default function Home() {
     const shouldDisplayCanvas = () => [PlayerState.Active, PlayerState.Loading].includes(status.current);
 
     const fireErrorToast = () => {
-        toast.error("Your file has no animations.", {
-            // action: {
-            //     label: "Okay",
-            //     onClick: () => console.log("Okay"),
-            // },
-        });
+        toast.error("Your file has no animations.");
     }
 
     const component_prompt = () => {
@@ -331,12 +346,13 @@ export default function Home() {
                         </CardHeader>
                         <CardContent className="grid gap-4">
                             <Button
-                                variant="outline"
-                                onClick={() =>
-                                    fireErrorToast()
-                                }
+                                onClick={() => {
+                                    if (!riveAnimation) return;
+                                    isPlaying ? riveAnimation.pause() : riveAnimation.play();
+                                }}
+                                disabled={status.current !== PlayerState.Active}
                             >
-                                Show Toast
+                                {status.current !== PlayerState.Active ? "Play/Pause" : isPlaying ? 'Pause' : 'Play'}
                             </Button>
                             <Tabs defaultValue="animations" className="w-full">
                                 <TabsList>
@@ -344,6 +360,21 @@ export default function Home() {
                                     <TabsTrigger value="state-machines">State Machines</TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="animations">
+                                    {/* disable all of them with a button, with the active buttutton being default color and the rest being outlined */}
+                                        <ul className="list-inside text-sm text-center sm:text-left">
+                                            {animationList?.animations.map((animation, index) => (
+                                                <li key={index} className="mb-2 flex items-center justify-between">
+                                                    {animation}
+                                                        <Button
+                                                        variant={animationList.active === animation ? "default" : "outline"} // ShadCN button variant
+                                                        onClick={() => setActiveAnimation(animation)}
+                                                    >
+                                                            {animationList.active === animation ? "Active" : "Select"}
+                                                        </Button>
+                                                    </li>
+                                            ))}
+                                        </ul>
+                                    
                                     <ol className="list-inside list-decimal text-sm text-center sm:text-left">
                                         {animationList?.animations.map((animation, index) => (
                                             <li key={index} className="mb-2">
@@ -372,14 +403,6 @@ export default function Home() {
                             </li>
                                 <li>Save and see your changes instantly.</li>
                             </ol>
-                            <Button
-                                onClick={() => {
-                                    if (!riveAnimation) return;
-                                    isPlaying ? riveAnimation.pause() : riveAnimation.play();
-                                }}
-                            >
-                                {isPlaying ? 'Pause' : 'Play'}
-                            </Button>
                         </CardContent>
                     </Card>
                 </div>
