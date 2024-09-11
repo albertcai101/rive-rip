@@ -54,8 +54,6 @@ export default function Home() {
     }, [riveAnimation]);
 
     useEffect(() => {
-        console.log('Status useEffect');
-        console.log('status is', status);
         if (status.current === PlayerState.Error && status.error !== null) {
             reset();
         } 
@@ -92,10 +90,7 @@ export default function Home() {
     const setAnimationWithBuffer = (buffer: string | ArrayBuffer | null) => {
         if (!buffer) return;
 
-        console.log('Loading animation...');
-        
         setStatus({ current: PlayerState.Loading });
-
         if (riveAnimation) {
             riveAnimation.load({
                 buffer: buffer as ArrayBuffer,
@@ -107,9 +102,10 @@ export default function Home() {
         console.log('Creating new animation...');
 
         try {
+            console.log(canvasRef.current);
             setRiveAnimation(new Rive({
                 buffer: buffer as ArrayBuffer,
-                canvas: canvasRef.current as HTMLCanvasElement,
+                canvas: canvasRef.current!,
                 autoplay: true,
                 layout: new Layout({
                     fit: Fit.Cover,
@@ -118,6 +114,7 @@ export default function Home() {
             }));
             setStatus({ current: PlayerState.Active });
         } catch (e) {
+            console.error('Error creating animation', e);
             setStatus({ current: PlayerState.Error, error: PlayerError.NoAnimation });
         }
     };
@@ -205,7 +202,8 @@ export default function Home() {
                             onDragEnter={(e) => handleDragEnter(e)}
                             onDragLeave={(e) => handleDragLeave(e)}
                         >
-                            {shouldDisplayCanvas() ? ( component_canvas()) : ( component_prompt())}
+                            <canvas ref={canvasRef} style={{ display: shouldDisplayCanvas() ? 'block' : 'none' }} className="bg-red-400"/>
+
                         </div>
                     </CardContent>
                 </Card>
