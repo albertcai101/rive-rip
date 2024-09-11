@@ -4,6 +4,9 @@ import { DragEvent, useState, useRef, useEffect } from 'react';
 import { Rive, Layout, EventType, Fit, Alignment, } from '@rive-app/react-canvas';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, } from "@/components/ui/card"
 
+import { UploadIcon } from '@radix-ui/react-icons';
+import { Button } from '@/components/ui/button';
+
 enum PlayerState {
     Idle,
     Loading,
@@ -29,6 +32,7 @@ type Status = {
 export default function Home() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const previewRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const [status, setStatus] = useState<Status>({ current: PlayerState.Idle, hovering: false });
     const [filename, setFilename] = useState<string | null>(null);
@@ -37,14 +41,11 @@ export default function Home() {
     const [dimensions, setDimensions] = useState<Dimensions>({ width: 0, height: 0 });
     
     useEffect(() => {
-        console.log('Rive Animation useEffect');
         riveAnimation?.on(EventType.Load, () => {
             // TODO: stuff on successful load
-            console.log('Animation loaded');
             setStatus({ current: PlayerState.Active, error: null });
         });
         riveAnimation?.on(EventType.LoadError, () => {
-            console.error('Error loading animation');
             setStatus({ current: PlayerState.Error, error: PlayerError.NoAnimation });
         });
         riveAnimation?.on(EventType.Play, () => setIsPlaying(true));
@@ -74,9 +75,10 @@ export default function Home() {
             //  TODO: handle hiding some elements on mobile
             // window.innerWidth < 800 ? console.log('Mobile') : console.log('Desktop');
         }
-    }, [dimensions]);
+    }, [dimensions, riveAnimation]);
 
     useEffect(() => {
+        updateDimensions();
         window.addEventListener('resize', updateDimensions);
         return () => window.removeEventListener('resize', updateDimensions);
     }, []);
@@ -99,10 +101,8 @@ export default function Home() {
             return;
         }
 
-        console.log('Creating new animation...');
 
         try {
-            console.log(canvasRef.current);
             setRiveAnimation(new Rive({
                 buffer: buffer as ArrayBuffer,
                 canvas: canvasRef.current!,
@@ -114,7 +114,6 @@ export default function Home() {
             }));
             setStatus({ current: PlayerState.Active });
         } catch (e) {
-            console.error('Error creating animation', e);
             setStatus({ current: PlayerState.Error, error: PlayerError.NoAnimation });
         }
     };
@@ -176,18 +175,31 @@ export default function Home() {
 
     const component_prompt = () => {
         return (
-            <div className="absolute inset-0 flex items-center justify-center rounded-lg">
-                <p className="text-lg font-semibold text-gray-500">Drag and drop your animation here</p>
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4" style={{ display: shouldDisplayCanvas() ? 'none' : 'flex' }}>
+                <UploadIcon className="w-12 h-12"/>
+                Drag and drop a Rive file or
+                <Button onClick={() => inputRef.current?.click()} >
+                    Browse
+                </Button>
+                <input hidden type="file" accept=".riv" ref={inputRef}
+                    onChange={(e) => {
+                        const files = e.target.files;
+                        if (files) {
+                            const droppedFile = files[0];
+                            load(droppedFile);
+                        }
+                    }}
+                />
             </div>
         );
     };
 
     const component_canvas = () => {
-        return ( <canvas ref={canvasRef} /> );
+        return <canvas ref={canvasRef} style={{ display: shouldDisplayCanvas() ? 'block' : 'none' }} className="bg-green-400"/>
     }
 
     return (
-        <div className="grid grid-cols-[1fr_300px] min-h-screen gap-10 p-20 font-[family-name:var(--font-geist-sans)]">
+        <div className="grid grid-cols-[1fr_300px] min-h-screen gap-10 p-20">
             <main className="flex flex-col gap-8 col-start-1">
                 <Card>
                     <CardHeader>
@@ -196,14 +208,14 @@ export default function Home() {
                     <CardContent className="grid gap-4">
                         <div
                             ref={previewRef}
-                            className="relative w-full h-[600px] rounded-lg border p-6 overflow-hidden"
+                            className="relative w-full h-[600px] rounded-lg overflow-hidden"
                             onDrop={(e) => handleDrop(e)}
                             onDragOver={(e) => handleDragOver(e)}
                             onDragEnter={(e) => handleDragEnter(e)}
                             onDragLeave={(e) => handleDragLeave(e)}
                         >
-                            <canvas ref={canvasRef} style={{ display: shouldDisplayCanvas() ? 'block' : 'none' }} className="bg-red-400"/>
-
+                            { component_canvas() }
+                            { component_prompt() }
                         </div>
                     </CardContent>
                 </Card>
@@ -213,7 +225,7 @@ export default function Home() {
                     <CardTitle>Controls</CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-4">
-                    <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
+                    <ol className="list-inside list-decimal text-sm text-center sm:text-left">
                         <li className="mb-2">
                         Get started by editing{" "}
                             <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
@@ -223,24 +235,14 @@ export default function Home() {
                     </li>
                         <li>Save and see your changes instantly.</li>
                     </ol>
-                    <button
-                        className="btn"
+                    <Button
                         onClick={() => {
                             if (!riveAnimation) return;
                             isPlaying ? riveAnimation.pause() : riveAnimation.play();
                         }}
                     >
                         {isPlaying ? 'Pause' : 'Play'}
-                    </button>
-                    <button
-                        className="btn"
-                        onClick={() => {
-                            if (!riveAnimation) return;
-                            riveAnimation.stop();
-                        }}
-                    >
-                        Stop
-                    </button>
+                    </Button>
                 </CardContent>
             </Card>
         </div>
