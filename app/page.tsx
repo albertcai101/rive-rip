@@ -1,7 +1,7 @@
 "use client";
 
 import { DragEvent, useState, useRef, useEffect } from 'react';
-import { Rive, Layout, EventType, Fit, Alignment, } from '@rive-app/react-canvas';
+import { Rive, Layout, EventType, Fit, Alignment, useStateMachineInput } from '@rive-app/react-canvas';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue, } from "@/components/ui/select"
@@ -25,11 +25,6 @@ enum PlayerState {
 
 enum PlayerError {
     NoAnimation,
-}
-
-enum ControllerState {
-    Animation,
-    StateMachine,
 }
 
 type Dimensions = {
@@ -68,6 +63,7 @@ export default function Home() {
     const [riveAnimation, setRiveAnimation] = useState<Rive | null>(null);
     const [animationList, setAnimationList] = useState<RiveAnimations | null>(null);
     const [stateMachineList, setStateMachineList] = useState<RiveStateMachines | null>(null);
+    const [stateMachineInputs, setStateMachineInputs] = useState<any[]>([]);
 
     const [isPlaying, setIsPlaying] = useState<boolean>(true);
     const [controller, setController] = useState<RiveController>({ active: "animations" });
@@ -248,15 +244,29 @@ export default function Home() {
 
         // log all inputs to this state machine
         const inputs = riveAnimation?.stateMachineInputs(stateMachine);
+        setStateMachineInputs(inputs);
+
         console.log('inputs: ', inputs);
 
         // inputs is a list each element has a name and type, log them
+        // let allInputs = [] as RiveStateMachineInput[];
         inputs?.forEach((input) => {
             console.log('input: ', input);
             const { name, type } = input;
             console.log('name: ', name);
             console.log('type: ', type);
+            // const thisStateMachineInput = useStateMachineInput(riveAnimation, stateMachine, name);
+
+            // add to state machine input list
+            // allInputs.push({
+            //     name,
+            //     type,
+            //     input: thisStateMachineInput,
+            // });
         });
+
+        // set state machine input animation
+        // setStateMachineInputList(allInputs);
     }
 
     const getAnimationList = () => {
@@ -453,6 +463,22 @@ export default function Home() {
                                         </SelectContent>
                                     </Select>
                                 </TabsContent>
+                                <div className="w-full">
+                                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
+                                        {stateMachineInputs?.map((input, index) => (
+                                            <li key={index} className="w-full">
+                                                <Button
+                                                    variant="default"
+                                                    onClick={() => console.log('input: ', input)}
+                                                    className="w-full"
+                                                    size="xs"
+                                                >
+                                                    {input.name}
+                                                </Button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
                             </Tabs>
                             <Separator orientation="horizontal" />
                             <Button
