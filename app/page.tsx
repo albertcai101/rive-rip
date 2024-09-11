@@ -9,6 +9,7 @@ import { Toaster,toast } from "sonner";
 import { UploadIcon } from '@radix-ui/react-icons';
 import { Upload } from 'lucide-react';
 import { BookOpen } from 'lucide-react';
+import { LaptopIcon } from '@radix-ui/react-icons';
 import { ReaderIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
@@ -291,10 +292,10 @@ export default function Home() {
             <div id='container' className="px-8 max-w-[1400px] mx-auto pb-20">
                 <div className="relative flex w-full flex-col items-start">
                     <section className="mx-auto flex flex-col items-start gap-2 px-4 py-8 md:py-12 md:pb-8 lg:py-12 lg::pb-10 w-full">
-                        <a className="group inline-flex items-center px-0.5 text-sm font-medium" href="https://rive.app/community/doc/introduction/docvphVOrBbl" target="_blank" rel="noopener noreferrer">
-                            <ReaderIcon className="h-4 w-4" />
+                        <a className="group inline-flex items-center px-0.5 text-sm font-medium" href="https://editor.rive.app/" target="_blank" rel="noopener noreferrer">
+                            <LaptopIcon className="h-4 w-4" />
                             <Separator orientation="vertical" className="mx-2 h-4" />
-                            <span className="underline-offset-4 group-hover:underline">rive docs</span>
+                            <span className="underline-offset-4 group-hover:underline">open rive</span>
                             <ArrowRight className="h-4 w-4 ml-1" />
                         </a>
                         <h1 className="text-3xl font-bold leading-tight tracking-tighter md:text-4xl lg:leading-[1.1] hidden md:block">
@@ -352,13 +353,6 @@ export default function Home() {
                             <CardDescription>Interact with the animation.</CardDescription>
                         </CardHeader>
                         <CardContent className="grid gap-4">
-                            <Button
-                                onClick={() => togglePlayback}
-                                disabled={status.current !== PlayerState.Active}
-                            >
-                                {status.current !== PlayerState.Active ? "Play/Pause" : isPlaying ? 'Pause' : 'Play'}
-                            </Button>
-                            <Separator orientation="horizontal" />
                             <Tabs defaultValue="animations" className="w-full flex flex-col items-center">
                                 <TabsList className="grid w-full grid-cols-2">
                                     <TabsTrigger value="animations">Animations</TabsTrigger>
@@ -392,6 +386,14 @@ export default function Home() {
                                     </ol>
                                 </TabsContent>
                             </Tabs>
+                            <Separator orientation="horizontal" />
+                            <Button
+                                onClick={() => { togglePlayback(); }}
+                                disabled={status.current !== PlayerState.Active}
+                                variant="secondary"
+                            >
+                                {status.current !== PlayerState.Active ? "Play/Pause" : isPlaying ? 'Pause' : 'Play'}
+                            </Button>
                         </CardContent>
                     </Card>
                 </div>
