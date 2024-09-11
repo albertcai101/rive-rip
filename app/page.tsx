@@ -360,7 +360,7 @@ export default function Home() {
                         <a className="group inline-flex items-center px-0.5 text-sm font-medium" href="https://editor.rive.app/" target="_blank" rel="noopener noreferrer">
                             <LaptopIcon className="h-4 w-4" />
                             <Separator orientation="vertical" className="mx-2 h-4" />
-                            <span className="underline-offset-4 group-hover:underline">open rive</span>
+                            <span className="underline-offset-4 group-hover:underline">open rive editor</span>
                             <ArrowRight className="h-4 w-4 ml-1" />
                         </a>
                         <h1 className="text-3xl font-bold leading-tight tracking-tighter md:text-4xl lg:leading-[1.1] hidden md:block">
@@ -462,23 +462,26 @@ export default function Home() {
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
+                                    <div className="w-full mt-2">
+                                        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
+                                            {stateMachineInputs?.map((input, index) => (
+                                                <li key={index} className="w-full">
+                                                    <Button
+                                                        variant="default"
+                                                        onClick={() => { 
+                                                            console.log('input: ', input);
+                                                            input.fire();
+                                                        }}
+                                                        className="w-full"
+                                                        size="xs"
+                                                    >
+                                                        {input.name}
+                                                    </Button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
                                 </TabsContent>
-                                <div className="w-full">
-                                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
-                                        {stateMachineInputs?.map((input, index) => (
-                                            <li key={index} className="w-full">
-                                                <Button
-                                                    variant="default"
-                                                    onClick={() => console.log('input: ', input)}
-                                                    className="w-full"
-                                                    size="xs"
-                                                >
-                                                    {input.name}
-                                                </Button>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
                             </Tabs>
                             <Separator orientation="horizontal" />
                             <Button
