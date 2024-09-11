@@ -4,7 +4,8 @@ import { DragEvent, useState, useRef, useEffect } from 'react';
 import { Rive, Layout, EventType, Fit, Alignment, } from '@rive-app/react-canvas';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Toaster,toast } from "sonner";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue, } from "@/components/ui/select"
+import { Toaster, toast } from "sonner";
 
 import { UploadIcon } from '@radix-ui/react-icons';
 import { Upload } from 'lucide-react';
@@ -24,6 +25,11 @@ enum PlayerState {
 
 enum PlayerError {
     NoAnimation,
+}
+
+enum ControllerState {
+    Animation,
+    StateMachine,
 }
 
 type Dimensions = {
@@ -47,6 +53,10 @@ type RiveStateMachines = {
     active: string;
 };
 
+type RiveController = {
+    active: "animations" | "state-machines";
+};
+
 export default function Home() {
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -60,6 +70,7 @@ export default function Home() {
     const [stateMachineList, setStateMachineList] = useState<RiveStateMachines | null>(null);
 
     const [isPlaying, setIsPlaying] = useState<boolean>(true);
+    const [controller, setController] = useState<RiveController>({ active: "animations" });
     const [dimensions, setDimensions] = useState<Dimensions>({ width: 0, height: 0 });
     
     useEffect(() => {
@@ -69,6 +80,7 @@ export default function Home() {
             getAnimationList();
             getStateMachineList();
             setStatus({ current: PlayerState.Active, error: null });
+            setControllerState(controller.active);
         };
 
         const handleLoadError = () => {
@@ -187,6 +199,24 @@ export default function Home() {
         clearCanvas();
     };
 
+    const setControllerState = (state: string) => {
+        // check if state is valid
+        if (state !== "animations" && state !== "state-machines") return;
+
+        console.log('new controller state: ', state);
+
+        setController({
+            ...controller,
+            active: state === "animations" ? "animations" : "state-machines",
+        });
+
+        if (state === "animations" && animationList) {
+            setActiveAnimation(animationList.active);
+        } else if (state === "state-machines" && stateMachineList) {
+            setActiveStateMachine(stateMachineList.active);
+        }
+    }
+
     const setActiveAnimation = (animation: string) => {
         if (!riveAnimation) return;
         if (!animationList) return;
@@ -202,11 +232,37 @@ export default function Home() {
         }
     }
 
+    const setActiveStateMachine = (stateMachine: string) => {
+        if (!riveAnimation) return;
+        if (!stateMachineList) return;
+
+        clearCanvas();
+        if (riveAnimation) {
+            riveAnimation.stop(stateMachineList?.active);
+            setStateMachineList({
+                ...stateMachineList,
+                active: stateMachine,
+            });
+            riveAnimation.play(stateMachine);
+        }
+
+        // log all inputs to this state machine
+        const inputs = riveAnimation?.stateMachineInputs(stateMachine);
+        console.log('inputs: ', inputs);
+
+        // inputs is a list each element has a name and type, log them
+        inputs?.forEach((input) => {
+            console.log('input: ', input);
+            const { name, type } = input;
+            console.log('name: ', name);
+            console.log('type: ', type);
+        });
+    }
+
     const getAnimationList = () => {
         const animations = riveAnimation?.animationNames;
         if (!animations) return;
 
-        console.log('animations: ', animations);
         setAnimationList({ animations, active: animations[0] });
     }
 
@@ -214,8 +270,8 @@ export default function Home() {
         const stateMachines = riveAnimation?.stateMachineNames;
         if (!stateMachines) return;
 
-        console.log('state machines: ', stateMachines);
         setStateMachineList({ stateMachines, active: stateMachines[0] });
+
     }
 
     const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
@@ -238,7 +294,6 @@ export default function Home() {
     };
 
     const handleDrop = (e: DragEvent<HTMLDivElement>) => {
-        console.log(e.dataTransfer.files[0]);
         setStatus({ ...status, hovering: false });
         load(e.dataTransfer.files[0]);
         e.preventDefault();
@@ -353,8 +408,12 @@ export default function Home() {
                             <CardDescription>Interact with the animation.</CardDescription>
                         </CardHeader>
                         <CardContent className="grid gap-4">
-                            <Tabs defaultValue="animations" className="w-full flex flex-col items-center">
-                                <TabsList className="grid w-full grid-cols-2">
+                            <Tabs 
+                                value={controller.active}
+                                className="w-full flex flex-col items-center"
+                                onValueChange={(value) => setControllerState(value)}
+                            >
+                                <TabsList className="grid w-full grid-cols-2 mb-2">
                                     <TabsTrigger value="animations">Animations</TabsTrigger>
                                     <TabsTrigger value="state-machines">State Machines</TabsTrigger>
                                 </TabsList>
@@ -376,14 +435,23 @@ export default function Home() {
                                         </ul>
                                     </div>
                                 </TabsContent>
-                                <TabsContent value="state-machines">
-                                    <ol className="list-inside list-decimal text-sm text-center sm:text-left">
-                                        {stateMachineList?.stateMachines.map((stateMachine, index) => (
-                                            <li key={index} className="mb-2">
-                                                {stateMachine}
-                                            </li>
-                                        ))}
-                                    </ol>
+                                <TabsContent value="state-machines" className="w-full flex flex-col items-center">
+                                    <Select
+                                        value={stateMachineList?.active}
+                                        onValueChange={(value) => setActiveStateMachine(value)}
+                                    >
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Select State Machine" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectLabel>Available State Machines</SelectLabel>
+                                                {stateMachineList?.stateMachines.map((stateMachine) => (
+                                                    <SelectItem key={stateMachine} value={stateMachine}>{stateMachine}</SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
                                 </TabsContent>
                             </Tabs>
                             <Separator orientation="horizontal" />
