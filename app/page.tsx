@@ -45,6 +45,7 @@ type RiveStateMachines = {
 };
 
 export default function Home() {
+
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const previewRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -251,12 +252,26 @@ export default function Home() {
                             <ArrowRight className="h-4 w-4 ml-1" />
                         </a>
                         <h1 className="text-3xl font-bold leading-tight tracking-tighter md:text-4xl lg:leading-[1.1] hidden md:block">
-                            Rive Preview, Upgraded.
+                            Rive Web Runtime, Upgraded.
                         </h1>
                         <h1 className="text-3xl font-bold leading-tight tracking-tighter md:text-4xl lg:leading-[1.1] md:hidden">
-                            Rive Preview.
+                            Rive Runtime.
                         </h1>
                         <p className="max-w-2xl text-lg font-light text-foreground"> Test interactions through animations and the state machine.</p>
+                        <div className="fex w-full items-center justify-start gap-2 py-2">
+                            <div className="flex items-center gap-2">
+                                <a href="https://github.com/spellr-org/rive-rip" target="_blank" rel="noopener noreferrer">
+                                    <Button size="xs">
+                                        Star on GitHub
+                                    </Button>
+                                </a>
+                                <a href="https://rive.app/preview/" target="_blank" rel="noopener noreferrer">
+                                    <Button size="xs" variant="ghost">
+                                        Compare with Old Rive Preview
+                                    </Button>
+                                </a>
+                            </div>
+                        </div>
                     </section>
                 </div>
                 <div className="grid grid-cols-[1fr_300px] min-h-screen gap-10">
