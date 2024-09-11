@@ -281,7 +281,7 @@ export default function Home() {
     return (
         <main className="flex-1 font-[family-name:var(--font-geist-sans)]">
             <Toaster richColors visibleToasts={10}/>
-            <div id='container' className="px-8 max-w-[1400px] mx-auto">
+            <div id='container' className="px-8 max-w-[1400px] mx-auto pb-20">
                 <div className="relative flex w-full flex-col items-start">
                     <section className="mx-auto flex flex-col items-start gap-2 px-4 py-8 md:py-12 md:pb-8 lg:py-12 lg::pb-10 w-full">
                         <a className="group inline-flex items-center px-0.5 text-sm font-medium" href="https://rive.app/community/doc/introduction/docvphVOrBbl" target="_blank" rel="noopener noreferrer">
@@ -313,7 +313,7 @@ export default function Home() {
                         </div>
                     </section>
                 </div>
-                <div className="grid grid-cols-[1fr_300px] min-h-screen gap-10">
+                <div className="grid grid-cols-[1fr_300px]  gap-10">
                     <div className="flex flex-col gap-8 col-start-1">
                         <Card>
                             <CardHeader>
@@ -354,34 +354,29 @@ export default function Home() {
                             >
                                 {status.current !== PlayerState.Active ? "Play/Pause" : isPlaying ? 'Pause' : 'Play'}
                             </Button>
-                            <Tabs defaultValue="animations" className="w-full">
-                                <TabsList>
+                            <Separator orientation="horizontal" />
+                            <Tabs defaultValue="animations" className="w-full flex flex-col items-center">
+                                <TabsList className="grid w-full grid-cols-2">
                                     <TabsTrigger value="animations">Animations</TabsTrigger>
                                     <TabsTrigger value="state-machines">State Machines</TabsTrigger>
                                 </TabsList>
-                                <TabsContent value="animations">
-                                    {/* disable all of them with a button, with the active buttutton being default color and the rest being outlined */}
-                                        <ul className="list-inside text-sm text-center sm:text-left">
+                                <TabsContent value="animations" className="w-full">
+                                    <div className="w-full">
+                                        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
                                             {animationList?.animations.map((animation, index) => (
-                                                <li key={index} className="mb-2 flex items-center justify-between">
-                                                    {animation}
-                                                        <Button
+                                                <li key={index} className="w-full">
+                                                    <Button
                                                         variant={animationList.active === animation ? "default" : "outline"} // ShadCN button variant
                                                         onClick={() => setActiveAnimation(animation)}
+                                                        className="w-full"
+                                                        size="xs"
                                                     >
-                                                            {animationList.active === animation ? "Active" : "Select"}
-                                                        </Button>
-                                                    </li>
+                                                        {animation}
+                                                    </Button>
+                                                </li>
                                             ))}
                                         </ul>
-                                    
-                                    <ol className="list-inside list-decimal text-sm text-center sm:text-left">
-                                        {animationList?.animations.map((animation, index) => (
-                                            <li key={index} className="mb-2">
-                                                {animation}
-                                            </li>
-                                        ))}
-                                    </ol>
+                                    </div>
                                 </TabsContent>
                                 <TabsContent value="state-machines">
                                     <ol className="list-inside list-decimal text-sm text-center sm:text-left">
@@ -393,16 +388,6 @@ export default function Home() {
                                     </ol>
                                 </TabsContent>
                             </Tabs>
-                            <ol className="list-inside list-decimal text-sm text-center sm:text-left">
-                                <li className="mb-2">
-                                Get started by editing{" "}
-                                    <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-                                    app/page.tsx
-                                </code>
-                                .
-                            </li>
-                                <li>Save and see your changes instantly.</li>
-                            </ol>
                         </CardContent>
                     </Card>
                 </div>
