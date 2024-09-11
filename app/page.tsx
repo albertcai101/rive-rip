@@ -3,6 +3,8 @@
 import { DragEvent, useState, useRef, useEffect } from 'react';
 import { Rive, Layout, EventType, Fit, Alignment, } from '@rive-app/react-canvas';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Toaster,toast } from "sonner";
 
 import { UploadIcon } from '@radix-ui/react-icons';
 import { Upload } from 'lucide-react';
@@ -60,11 +62,14 @@ export default function Home() {
     const [dimensions, setDimensions] = useState<Dimensions>({ width: 0, height: 0 });
     
     useEffect(() => {
+        console.log('riveAnimation useffect setting up event listeners');
+        console.log('riveAnimation: ', riveAnimation);
         riveAnimation?.on(EventType.Load, () => {
             // TODO: stuff on successful load
-            setStatus({ current: PlayerState.Active, error: null });
             getAnimationList();
             getStateMachineList();
+            console.log("riveAnimation eventlistener on load is setting status to active");
+            setStatus({ current: PlayerState.Active, error: null });
 
             // const stateMachines = riveAnimation.stateMachineNames;
             // for (const stateMachine of stateMachines) {
@@ -72,6 +77,7 @@ export default function Home() {
             // }
         });
         riveAnimation?.on(EventType.LoadError, () => {
+            console.log("riveAnimation eventlistener on load error is setting status to error");
             setStatus({ current: PlayerState.Error, error: PlayerError.NoAnimation });
         });
         riveAnimation?.on(EventType.Play, () => setIsPlaying(true));
@@ -81,12 +87,13 @@ export default function Home() {
     }, [riveAnimation]);
 
     useEffect(() => {
+        console.log('status: ', status);
         if (status.current === PlayerState.Error && status.error !== null) {
             reset();
-        } else if (status.current === PlayerState.Active && !animationList) {
-            getAnimationList();
-        } else if (status.current === PlayerState.Active && !stateMachineList) {
-            getStateMachineList();
+            fireErrorToast();
+        } else {
+            if (status.current === PlayerState.Active && !animationList) { getAnimationList(); }
+            if (status.current === PlayerState.Active && !stateMachineList) { getStateMachineList(); }
         }
     }, [status]);
 
@@ -129,6 +136,7 @@ export default function Home() {
 
 
         try {
+            console.log('setting animation with buffer');
             setRiveAnimation(new Rive({
                 buffer: buffer as ArrayBuffer,
                 canvas: canvasRef.current!,
@@ -138,8 +146,10 @@ export default function Home() {
                     alignment: Alignment.Center,
                 }),
             }));
+            console.log("setAnimationWithBuffer is setting status to active");
             setStatus({ current: PlayerState.Active });
         } catch (e) {
+            console.log("setAnimationWithBuffer is setting status to error");
             setStatus({ current: PlayerState.Error, error: PlayerError.NoAnimation });
         }
     };
@@ -154,8 +164,12 @@ export default function Home() {
     };
 
     const reset = () => {
+        console.log('resetting');
+        setIsPlaying(true);
         setFilename(null);
         setRiveAnimation(null);
+        setAnimationList(null);
+        setStateMachineList(null);
         setStatus({ ...status, current: PlayerState.Idle });
         clearCanvas();
     };
@@ -180,7 +194,7 @@ export default function Home() {
         setStatus({ ...status, hovering: true });
         e.preventDefault();
         e.stopPropagation();
-    };
+    }
 
     const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
         setStatus({ ...status, hovering: false });
@@ -215,6 +229,15 @@ export default function Home() {
 
     const shouldDisplayCanvas = () => [PlayerState.Active, PlayerState.Loading].includes(status.current);
 
+    const fireErrorToast = () => {
+        toast.error("Your file has no animations.", {
+            // action: {
+            //     label: "Okay",
+            //     onClick: () => console.log("Okay"),
+            // },
+        });
+    }
+
     const component_prompt = () => {
         return (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-4" style={{ display: shouldDisplayCanvas() ? 'none' : 'flex' }}>
@@ -242,6 +265,7 @@ export default function Home() {
 
     return (
         <main className="flex-1 font-[family-name:var(--font-geist-sans)]">
+            <Toaster richColors visibleToasts={10}/>
             <div id='container' className="px-8 max-w-[1400px] mx-auto">
                 <div className="relative flex w-full flex-col items-start">
                     <section className="mx-auto flex flex-col items-start gap-2 px-4 py-8 md:py-12 md:pb-8 lg:py-12 lg::pb-10 w-full">
@@ -303,8 +327,41 @@ export default function Home() {
                     <Card>
                         <CardHeader>
                             <CardTitle>Controls</CardTitle>
+                            <CardDescription>Interact with the animation.</CardDescription>
                         </CardHeader>
                         <CardContent className="grid gap-4">
+                            <Button
+                                variant="outline"
+                                onClick={() =>
+                                    fireErrorToast()
+                                }
+                            >
+                                Show Toast
+                            </Button>
+                            <Tabs defaultValue="animations" className="w-full">
+                                <TabsList>
+                                    <TabsTrigger value="animations">Animations</TabsTrigger>
+                                    <TabsTrigger value="state-machines">State Machines</TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="animations">
+                                    <ol className="list-inside list-decimal text-sm text-center sm:text-left">
+                                        {animationList?.animations.map((animation, index) => (
+                                            <li key={index} className="mb-2">
+                                                {animation}
+                                            </li>
+                                        ))}
+                                    </ol>
+                                </TabsContent>
+                                <TabsContent value="state-machines">
+                                    <ol className="list-inside list-decimal text-sm text-center sm:text-left">
+                                        {stateMachineList?.stateMachines.map((stateMachine, index) => (
+                                            <li key={index} className="mb-2">
+                                                {stateMachine}
+                                            </li>
+                                        ))}
+                                    </ol>
+                                </TabsContent>
+                            </Tabs>
                             <ol className="list-inside list-decimal text-sm text-center sm:text-left">
                                 <li className="mb-2">
                                 Get started by editing{" "}
