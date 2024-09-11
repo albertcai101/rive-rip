@@ -181,7 +181,6 @@ export default function Home() {
     const setActiveAnimation = (animation: string) => {
         if (!riveAnimation) return;
         if (!animationList) return;
-        if (animation === animationList?.active) return;
 
         clearCanvas();
         if (riveAnimation) {
