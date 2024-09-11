@@ -6,7 +6,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, 
 
 import { UploadIcon } from '@radix-ui/react-icons';
 import { Upload } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
+import { ReaderIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 enum PlayerState {
     Idle,
@@ -236,10 +240,23 @@ export default function Home() {
     }
 
     return (
-        <main className="flex-1">
+        <main className="flex-1 font-[family-name:var(--font-geist-sans)]">
             <div id='container' className="px-8 max-w-[1400px] mx-auto">
                 <div className="relative flex w-full flex-col items-start">
                     <section className="mx-auto flex flex-col items-start gap-2 px-4 py-8 md:py-12 md:pb-8 lg:py-12 lg::pb-10 w-full">
+                        <a className="group inline-flex items-center px-0.5 text-sm font-medium" href="https://rive.app/community/doc/introduction/docvphVOrBbl" target="_blank" rel="noopener noreferrer">
+                            <ReaderIcon className="h-4 w-4" />
+                            <Separator orientation="vertical" className="mx-2 h-4" />
+                            <span className="underline-offset-4 group-hover:underline">rive docs</span>
+                            <ArrowRight className="h-4 w-4 ml-1" />
+                        </a>
+                        <h1 className="text-3xl font-bold leading-tight tracking-tighter md:text-4xl lg:leading-[1.1] hidden md:block">
+                            Rive Preview, Upgraded.
+                        </h1>
+                        <h1 className="text-3xl font-bold leading-tight tracking-tighter md:text-4xl lg:leading-[1.1] md:hidden">
+                            Rive Preview.
+                        </h1>
+                        <p className="max-w-2xl text-lg font-light text-foreground"> Test interactions through animations and the state machine.</p>
                     </section>
                 </div>
                 <div className="grid grid-cols-[1fr_300px] min-h-screen gap-10">
