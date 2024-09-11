@@ -5,6 +5,7 @@ import { Rive, Layout, EventType, Fit, Alignment, } from '@rive-app/react-canvas
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, } from "@/components/ui/card"
 
 import { UploadIcon } from '@radix-ui/react-icons';
+import { Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 enum PlayerState {
@@ -29,6 +30,16 @@ type Status = {
     error?: PlayerError | null;
 };
 
+type RiveAnimations = {
+    animations: string[];
+    active: string;
+};
+
+type RiveStateMachines = {
+    stateMachines: string[];
+    active: string;
+};
+
 export default function Home() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const previewRef = useRef<HTMLDivElement>(null);
@@ -37,6 +48,9 @@ export default function Home() {
     const [status, setStatus] = useState<Status>({ current: PlayerState.Idle, hovering: false });
     const [filename, setFilename] = useState<string | null>(null);
     const [riveAnimation, setRiveAnimation] = useState<Rive | null>(null);
+    const [animationList, setAnimationList] = useState<RiveAnimations | null>(null);
+    const [stateMachineList, setStateMachineList] = useState<RiveStateMachines | null>(null);
+
     const [isPlaying, setIsPlaying] = useState<boolean>(true);
     const [dimensions, setDimensions] = useState<Dimensions>({ width: 0, height: 0 });
     
@@ -44,6 +58,13 @@ export default function Home() {
         riveAnimation?.on(EventType.Load, () => {
             // TODO: stuff on successful load
             setStatus({ current: PlayerState.Active, error: null });
+            getAnimationList();
+            getStateMachineList();
+
+            // const stateMachines = riveAnimation.stateMachineNames;
+            // for (const stateMachine of stateMachines) {
+            //     console.log('state machine inputs for ', stateMachine, ': ', riveAnimation.stateMachineInputs(stateMachine));
+            // }
         });
         riveAnimation?.on(EventType.LoadError, () => {
             setStatus({ current: PlayerState.Error, error: PlayerError.NoAnimation });
@@ -57,11 +78,11 @@ export default function Home() {
     useEffect(() => {
         if (status.current === PlayerState.Error && status.error !== null) {
             reset();
-        } 
-        // else if (status.current === PlayerState.Active && !animationList) {
-        //     // Try fetching the animations again
-        //     getAnimations();
-        // }
+        } else if (status.current === PlayerState.Active && !animationList) {
+            getAnimationList();
+        } else if (status.current === PlayerState.Active && !stateMachineList) {
+            getStateMachineList();
+        }
     }, [status]);
 
     useEffect(() => {
@@ -134,6 +155,22 @@ export default function Home() {
         clearCanvas();
     };
 
+    const getAnimationList = () => {
+        const animations = riveAnimation?.animationNames;
+        if (!animations) return;
+
+        console.log('animations: ', animations);
+        setAnimationList({ animations, active: animations[0] });
+    }
+
+    const getStateMachineList = () => {
+        const stateMachines = riveAnimation?.stateMachineNames;
+        if (!stateMachines) return;
+
+        console.log('state machines: ', stateMachines);
+        setStateMachineList({ stateMachines, active: stateMachines[0] });
+    }
+
     const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
         setStatus({ ...status, hovering: true });
         e.preventDefault();
@@ -176,7 +213,7 @@ export default function Home() {
     const component_prompt = () => {
         return (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-4" style={{ display: shouldDisplayCanvas() ? 'none' : 'flex' }}>
-                <UploadIcon className="w-12 h-12"/>
+                <Upload className="w-8 h-8"/>
                 Drag and drop a Rive file or
                 <Button onClick={() => inputRef.current?.click()} >
                     Browse
@@ -199,52 +236,65 @@ export default function Home() {
     }
 
     return (
-        <div className="grid grid-cols-[1fr_300px] min-h-screen gap-10 p-20">
-            <main className="flex flex-col gap-8 col-start-1">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Preview</CardTitle>
-                    </CardHeader>
-                    <CardContent className="grid gap-4">
-                        <div
-                            ref={previewRef}
-                            className="relative w-full h-[600px] rounded-lg overflow-hidden"
-                            onDrop={(e) => handleDrop(e)}
-                            onDragOver={(e) => handleDragOver(e)}
-                            onDragEnter={(e) => handleDragEnter(e)}
-                            onDragLeave={(e) => handleDragLeave(e)}
-                        >
-                            { component_canvas() }
-                            { component_prompt() }
-                        </div>
-                    </CardContent>
-                </Card>
-            </main>
-            <Card>
-                <CardHeader>
-                    <CardTitle>Controls</CardTitle>
-                </CardHeader>
-                <CardContent className="grid gap-4">
-                    <ol className="list-inside list-decimal text-sm text-center sm:text-left">
-                        <li className="mb-2">
-                        Get started by editing{" "}
-                            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-                            app/page.tsx
-                        </code>
-                        .
-                    </li>
-                        <li>Save and see your changes instantly.</li>
-                    </ol>
-                    <Button
-                        onClick={() => {
-                            if (!riveAnimation) return;
-                            isPlaying ? riveAnimation.pause() : riveAnimation.play();
-                        }}
-                    >
-                        {isPlaying ? 'Pause' : 'Play'}
-                    </Button>
-                </CardContent>
-            </Card>
-        </div>
+        <main className="flex-1">
+            <div id='container' className="px-8 max-w-[1400px] mx-auto">
+                <div className="relative flex w-full flex-col items-start">
+                    <section className="mx-auto flex flex-col items-start gap-2 px-4 py-8 md:py-12 md:pb-8 lg:py-12 lg::pb-10 w-full">
+                    </section>
+                </div>
+                <div className="grid grid-cols-[1fr_300px] min-h-screen gap-10">
+                    <div className="flex flex-col gap-8 col-start-1">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>
+                                    Preview
+                                </CardTitle>
+                                <CardDescription>
+                                    {filename ? `${filename}` : 'Choose a file to get started.'}
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div
+                                    ref={previewRef}
+                                    className="relative w-full h-[600px] rounded-lg overflow-hidden"
+                                    onDrop={(e) => handleDrop(e)}
+                                    onDragOver={(e) => handleDragOver(e)}
+                                    onDragEnter={(e) => handleDragEnter(e)}
+                                    onDragLeave={(e) => handleDragLeave(e)}
+                                >
+                                    { component_canvas() }
+                                    { component_prompt() }
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Controls</CardTitle>
+                        </CardHeader>
+                        <CardContent className="grid gap-4">
+                            <ol className="list-inside list-decimal text-sm text-center sm:text-left">
+                                <li className="mb-2">
+                                Get started by editing{" "}
+                                    <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
+                                    app/page.tsx
+                                </code>
+                                .
+                            </li>
+                                <li>Save and see your changes instantly.</li>
+                            </ol>
+                            <Button
+                                onClick={() => {
+                                    if (!riveAnimation) return;
+                                    isPlaying ? riveAnimation.pause() : riveAnimation.play();
+                                }}
+                            >
+                                {isPlaying ? 'Pause' : 'Play'}
+                            </Button>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        </main>
     );
 }
