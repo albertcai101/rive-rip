@@ -1,10 +1,12 @@
 "use client";
 
 import { DragEvent, useState, useRef, useEffect } from 'react';
-import { Rive, Layout, EventType, Fit, Alignment, useStateMachineInput } from '@rive-app/react-canvas';
+import { Rive, Layout, EventType, Fit, Alignment, useStateMachineInput, StateMachineInputType } from '@rive-app/react-canvas';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue, } from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 import { Toaster, toast } from "sonner";
 
 import { UploadIcon } from '@radix-ui/react-icons';
@@ -199,8 +201,6 @@ export default function Home() {
         // check if state is valid
         if (state !== "animations" && state !== "state-machines") return;
 
-        console.log('new controller state: ', state);
-
         setController({
             ...controller,
             active: state === "animations" ? "animations" : "state-machines",
@@ -245,28 +245,6 @@ export default function Home() {
         // log all inputs to this state machine
         const inputs = riveAnimation?.stateMachineInputs(stateMachine);
         setStateMachineInputs(inputs);
-
-        console.log('inputs: ', inputs);
-
-        // inputs is a list each element has a name and type, log them
-        // let allInputs = [] as RiveStateMachineInput[];
-        inputs?.forEach((input) => {
-            console.log('input: ', input);
-            const { name, type } = input;
-            console.log('name: ', name);
-            console.log('type: ', type);
-            // const thisStateMachineInput = useStateMachineInput(riveAnimation, stateMachine, name);
-
-            // add to state machine input list
-            // allInputs.push({
-            //     name,
-            //     type,
-            //     input: thisStateMachineInput,
-            // });
-        });
-
-        // set state machine input animation
-        // setStateMachineInputList(allInputs);
     }
 
     const getAnimationList = () => {
@@ -463,20 +441,64 @@ export default function Home() {
                                         </SelectContent>
                                     </Select>
                                     <div className="w-full mt-2">
-                                        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
+                                        <ul className="flex flex-col gap-2 w-full">
                                             {stateMachineInputs?.map((input, index) => (
                                                 <li key={index} className="w-full">
-                                                    <Button
-                                                        variant="default"
-                                                        onClick={() => { 
-                                                            console.log('input: ', input);
-                                                            input.fire();
-                                                        }}
-                                                        className="w-full"
-                                                        size="xs"
-                                                    >
-                                                        {input.name}
-                                                    </Button>
+                                                    {input.type === StateMachineInputType.Trigger && (
+                                                        <Button
+                                                            variant="default"
+                                                            onClick={() => { 
+                                                                console.log('input: ', input);
+                                                                input.fire();
+                                                            }}
+                                                            className="w-full"
+                                                            size="xs"
+                                                        >
+                                                            {input.name}
+                                                        </Button>
+                                                    )}
+
+                                                    {input.type === StateMachineInputType.Boolean && (
+                                                        <div className="flex items-center space-x-2">
+                                                            <Switch 
+                                                                id={input.name} 
+                                                                value={input.value}
+                                                                onCheckedChange={(value) => {
+                                                                    console.log('Boolean input: ', input.name, ' New value: ', value);
+                                                                    input.value = value;
+                                                                }}
+                                                            />
+                                                            <Label htmlFor={input.name}>{input.name}</Label>
+                                                        </div>
+                                                        // <div className="flex items-center gap-2">
+                                                        //     <span>{input.name} (Boolean)</span>
+                                                        //         <input
+                                                        //         type="checkbox"
+                                                        //         checked={input.value}
+                                                        //         onChange={(e) => {
+                                                        //             const newValue = e.target.checked;
+                                                        //             console.log('Boolean input: ', input.name, ' New value: ', newValue);
+                                                        //             input.value = newValue;
+                                                        //         }}
+                                                        //     />
+                                                        // </div>
+                                                    )}
+
+                                                    {input.type === StateMachineInputType.Number && (
+                                                        <div className="flex flex-col gap-2">
+                                                            <span>{input.name} (Number)</span>
+                                                                <input
+                                                                type="number"
+                                                                value={input.value}
+                                                                onChange={(e) => {
+                                                                    const newValue = parseFloat(e.target.value);
+                                                                    console.log('Number input: ', input.name, ' New value: ', newValue);
+                                                                    input.value = newValue;
+                                                                }}
+                                                                className="w-full"
+                                                            />
+                                                            </div>
+                                                    )}
                                                 </li>
                                             ))}
                                         </ul>
