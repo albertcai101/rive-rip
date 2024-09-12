@@ -16,6 +16,8 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
+import { sendGAEvent } from '@next/third-parties/google'
+
 const fitValues: (keyof typeof Fit)[] = [
     'Cover',
     'Contain',
@@ -229,6 +231,8 @@ export default function Home() {
             setAnimationWithBuffer(reader.result);
         };
         reader.readAsArrayBuffer(file);
+
+        sendGAEvent('event', 'upload', { filename: file.name, fileSize:file.size });
     };
 
     const formatFileSize = (bytes: number): string => {
