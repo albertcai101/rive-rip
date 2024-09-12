@@ -657,10 +657,25 @@ export default function Home() {
         );
     }
 
+    const component_footer = () => {
+        return (
+            <footer className="py-6 md:px-8 md:py-0 font-[family-name:var(--font-geist-sans)]">
+                <div className="container px-8 mx-5 flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
+                    <p className="text-balance text-center text-sm leading-loose text-muted-foreground md:text-left">
+                        {"Built by "}
+                        <a href="https://spellr.org" target="_blank" rel="noopener noreferrer" className="font_medium underline underline-offset-4">spellr</a>
+                        {". Made to simplify the handoff from animators to developers."}
+                    </p>
+                </div>
+            </footer>
+        );
+    }
+
     return (
+        <>
         <main className="flex-1 font-[family-name:var(--font-geist-sans)]">
             <Toaster richColors visibleToasts={10}/>
-            <div id='container' className="px-8 max-w-[1400px] mx-auto pb-20">
+            <div id='container' className="px-8 max-w-[1400px] mx-auto">
                 <div className="relative flex w-full flex-col items-start">
                     <section className="mx-auto flex flex-col items-start gap-2 px-4 py-8 md:py-12 md:pb-8 lg:py-12 lg::pb-10 w-full">
                         <a className="group inline-flex items-center px-0.5 text-sm font-medium" href="https://editor.rive.app/" target="_blank" rel="noopener noreferrer">
@@ -736,5 +751,7 @@ export default function Home() {
                 </div>
             </div>
         </main>
+        { component_footer() }
+        </>
     );
 }
