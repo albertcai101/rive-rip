@@ -624,7 +624,7 @@ export default function Home() {
 
     const component_codeCard = () => {
         return (
-            <Card className="w-full">
+            <Card className="flex-1 min-w-0">
                 <CardHeader>
                     <CardTitle>
                         Code Snippets
@@ -635,20 +635,20 @@ export default function Home() {
                 </CardHeader>
                 <CardContent>
                     <div className="w-full">
-                            <Tabs defaultValue="web">
-                                <TabsList>
-                                    <TabsTrigger value="web">Web</TabsTrigger>
-                                    <TabsTrigger value="react">React</TabsTrigger>
-                                    <TabsTrigger value="flutter">Flutter</TabsTrigger>
-                                    <TabsTrigger value="apple">iOS/macOS</TabsTrigger>
-                                    <TabsTrigger value="android">Android</TabsTrigger>
-                                </TabsList>
-                                <TabsContent value="web">Coming soon.</TabsContent>
-                                <TabsContent value="react">Coming soon.</TabsContent>
-                                <TabsContent value="flutter">Coming soon.</TabsContent>
-                                <TabsContent value="apple">Coming soon.</TabsContent>
-                                <TabsContent value="android">Coming soon.</TabsContent>
-                            </Tabs>
+                        <Tabs defaultValue="web">
+                            <TabsList className="mb-2">
+                                <TabsTrigger value="web">Web</TabsTrigger>
+                                <TabsTrigger value="react">React</TabsTrigger>
+                                <TabsTrigger value="flutter">Flutter</TabsTrigger>
+                                <TabsTrigger value="apple">iOS/macOS</TabsTrigger>
+                                <TabsTrigger value="android">Android</TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="web">Coming soon.</TabsContent>
+                            <TabsContent value="react">Coming soon.</TabsContent>
+                            <TabsContent value="flutter">Coming soon.</TabsContent>
+                            <TabsContent value="apple">Coming soon.</TabsContent>
+                            <TabsContent value="android">Coming soon.</TabsContent>
+                        </Tabs>
                     </div>
                 </CardContent>
             </Card>
@@ -726,7 +726,7 @@ export default function Home() {
                     </div>
                     { component_controlsCard() }
                     {/* 3 column grid that takes the whole width (both columns) */}
-                    <div className="col-span-2 flex gap-4">
+                    <div className="col-span-2 flex gap-4 overflow-hidden">
                         { component_appearanceCard() }
                         { component_layoutCard() }
                         { component_codeCard() }
