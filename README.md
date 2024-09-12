@@ -1,5 +1,7 @@
 # rive.rip
 
+Visit at [rive.rip](https://rive.rip/).
+
 A better alternative to preview `.riv` files, because [the official previewer](https://rive.app/preview/) is not good enough. Intended use is for teams, where developers and animators are different people. The common problem is that developers can't preview the state machine without Rive itself or the `.rev` file.
 
 Originally made for use internally at [Spellr](https://spellr.org/) to preview animations made by our animators.
