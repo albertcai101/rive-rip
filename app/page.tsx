@@ -410,7 +410,7 @@ export default function Home() {
                                     {animationList?.animations.map((animation, index) => (
                                         <li key={index} className="w-full">
                                             <Button
-                                                variant={animationList.active === animation ? "default" : "outline"} // ShadCN button variant
+                                                variant={animationList.active === animation ? "default" : "outline"}
                                                 onClick={() => setActiveAnimation(animation)}
                                                 className="w-full"
                                                 size="xs"
@@ -538,7 +538,7 @@ export default function Home() {
 
     const component_appearanceCard = () => {
         return (
-            <Card className="w-[25%] max-w-[250px]">
+            <Card className="w-[25%] max-w-[250px] overflow-x-scroll">
                 <CardHeader>
                     <CardTitle>
                         Appearance
@@ -574,7 +574,7 @@ export default function Home() {
 
     const component_layoutCard = () => {
         return (
-            <Card className="w-[25%]">
+            <Card className="w-[25%] overflow-x-scroll">
                 <CardHeader>
                     <CardTitle>
                         Layout
@@ -585,24 +585,26 @@ export default function Home() {
                 </CardHeader>
                 <CardContent>
                     <div className="w-full">
-                        <div className="flex flex-row justify-between items-center gap-12">
-                            <h2 className="text-lg font-medium mb-2">Fit</h2>
-                            <Select
-                                value={fitValues[alignFitIndex.fit]}
-                                onValueChange={(value) => setAlignFitIndex({ ...alignFitIndex, fit: fitValues.indexOf(value as keyof typeof Fit) })}
-                            >
-                                <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="Select Fit" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        <SelectLabel>Available Fits</SelectLabel>
-                                        {fitValues.map((fit) => (
-                                            <SelectItem key={fit} value={fit}>{fit}</SelectItem>
-                                        ))}
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
+                        <div className="flex flex-row flex-wrap justify-between items-center gap-2 mb-2">
+                            <h2 className="text-lg font-medium pr-8">Fit</h2>
+                            <div className="w-auto min-w-40">
+                                <Select
+                                    value={fitValues[alignFitIndex.fit]}
+                                    onValueChange={(value) => setAlignFitIndex({ ...alignFitIndex, fit: fitValues.indexOf(value as keyof typeof Fit) })}
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select Fit" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            <SelectLabel>Available Fits</SelectLabel>
+                                            {fitValues.map((fit) => (
+                                                <SelectItem key={fit} value={fit}>{fit}</SelectItem>
+                                            ))}
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                            </div>
                         </div>
                         <div className="flex flex-row justify-between flex-wrap">
                             <h2 className="text-lg font-medium mt-4 pr-8">Alignment</h2>
@@ -624,7 +626,7 @@ export default function Home() {
 
     const component_codeCard = () => {
         return (
-            <Card className="flex-1 min-w-0">
+            <Card className="flex-1 min-w-0 overflow-x-scroll">
                 <CardHeader>
                     <CardTitle>
                         Code Snippets
@@ -726,7 +728,7 @@ export default function Home() {
                     </div>
                     { component_controlsCard() }
                     {/* 3 column grid that takes the whole width (both columns) */}
-                    <div className="col-span-2 flex gap-4 overflow-hidden">
+                    <div className="col-span-2 flex gap-4">
                         { component_appearanceCard() }
                         { component_layoutCard() }
                         { component_codeCard() }
