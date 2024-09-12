@@ -30,6 +30,8 @@ enum PlayerError {
     NoAnimation,
 }
 
+type BackgroundColor = 'transparent' | 'white' | 'black'
+
 type Dimensions = {
     width: number;
     height: number;
@@ -70,6 +72,7 @@ export default function Home() {
 
     const [isPlaying, setIsPlaying] = useState<boolean>(true);
     const [controller, setController] = useState<RiveController>({ active: "animations" });
+    const [background, setBackground] = useState<BackgroundColor>('transparent');
     const [dimensions, setDimensions] = useState<Dimensions>({ width: 0, height: 0 });
     
     useEffect(() => {
@@ -327,7 +330,199 @@ export default function Home() {
     };
 
     const component_canvas = () => {
-        return <canvas ref={canvasRef} style={{ display: shouldDisplayCanvas() ? 'block' : 'none' }} className="bg-foreground"/>
+        return <canvas ref={canvasRef} style={{ display: shouldDisplayCanvas() ? 'block' : 'none' }} className={`${background === 'white' ? 'bg-white' : background === 'black' ? 'bg-black' : ''}`} />;
+    }
+
+    const component_controlsCard = () => {
+        return (
+            <Card>
+                <CardHeader>
+                    <CardTitle>Controls</CardTitle>
+                    <CardDescription>Interact with the animation.</CardDescription>
+                </CardHeader>
+                <CardContent className="grid gap-4">
+                    <Tabs 
+                        value={controller.active}
+                        className="w-full flex flex-col items-center"
+                        onValueChange={(value) => setControllerState(value)}
+                    >
+                        <TabsList className="grid w-full grid-cols-2 mb-2">
+                            <TabsTrigger value="animations">Animations</TabsTrigger>
+                            <TabsTrigger value="state-machines">State Machines</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="animations" className="w-full">
+                            <div className="w-full">
+                                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
+                                    {animationList?.animations.map((animation, index) => (
+                                        <li key={index} className="w-full">
+                                            <Button
+                                                variant={animationList.active === animation ? "default" : "outline"} // ShadCN button variant
+                                                onClick={() => setActiveAnimation(animation)}
+                                                className="w-full"
+                                                size="xs"
+                                            >
+                                                {animation}
+                                            </Button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </TabsContent>
+                        <TabsContent value="state-machines" className="w-full flex flex-col items-center">
+                            <Select
+                                value={stateMachineList?.active}
+                                onValueChange={(value) => setActiveStateMachine(value)}
+                            >
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select State Machine" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        <SelectLabel>Available State Machines</SelectLabel>
+                                        {stateMachineList?.stateMachines.map((stateMachine) => (
+                                            <SelectItem key={stateMachine} value={stateMachine}>{stateMachine}</SelectItem>
+                                        ))}
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                            <div className="w-full mt-2">
+                                {/* first show the trigger inputs */}
+                                {stateMachineInputs?.some((input) => input.type === StateMachineInputType.Trigger) && (
+                                    <>
+                                        <h2 className="text-lg font-medium mb-2">Triggers</h2>
+                                        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
+                                            {stateMachineInputs?.filter((input) => input.type === StateMachineInputType.Trigger).map((input, index) => (
+                                                <li key={index} className="w-full">
+                                                    <Button
+                                                        variant="default"
+                                                        onClick={() => { 
+                                                            console.log('input: ', input);
+                                                            input.fire();
+                                                        }}
+                                                        className="w-full"
+                                                        size="xs"
+                                                    >
+                                                        {input.name}
+                                                    </Button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </>
+                                )}
+                                {/* then show the boolean inputs */}
+                                {stateMachineInputs.some((input) => input.type === StateMachineInputType.Boolean) && (
+                                    <>
+                                        <h2 className="text-lg font-medium mt-4 mb-2">Booleans</h2>
+                                        <ul className="flex flex-col gap-2 w-full">
+                                            {stateMachineInputs?.filter((input) => input.type === StateMachineInputType.Boolean).map((input, index) => (
+                                                <li key={index} className="w-full">
+                                                    <div className="flex items-center space-x-2">
+                                                        <Switch 
+                                                            id={input.name} 
+                                                            value={input.value}
+                                                            onCheckedChange={(value) => {
+                                                                console.log('Boolean input: ', input.name, ' New value: ', value);
+                                                                input.value = value;
+                                                            }}
+                                                        />
+                                                        <Label htmlFor={input.name}>{input.name}</Label>
+                                                    </div>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </>
+                                )}
+                                {/* then show the number inputs */}
+                                {stateMachineInputs.some((input) => input.type === StateMachineInputType.Number) && (
+                                    <>
+                                        <h2 className="text-lg font-medium mt-4 mb-2">Numbers</h2>
+                                        <ul className="flex flex-col gap-2 w-full">
+                                            {stateMachineInputs?.filter((input) => input.type === StateMachineInputType.Number).map((input, index) => (
+                                                <li key={index} className="w-full">
+                                                    <div className="w-full max-w-sm">
+                                                        <Label htmlFor={input.name}>
+                                                            {input.name}
+                                                        </Label>
+                                                        <Input 
+                                                            type="number" 
+                                                            id={input.name}
+                                                            placeholder="Enter a number" 
+                                                            value={input.value}
+                                                            onChange={(e) => {
+                                                                const newValue = parseFloat(e.target.value);
+                                                                console.log('Number input: ', input.name, ' New value: ', newValue);
+                                                                input.value = newValue;
+                                                                console.log(input);
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </>
+                                )}
+                            </div>
+                        </TabsContent>
+                    </Tabs>
+                    {/* only show the play/pause button if the controller is on animations */}
+                    {controller.active === "animations" && (
+                        <>
+                            <Separator orientation="horizontal" />
+                            <Button
+                                onClick={() => { togglePlayback(); }}
+                                disabled={status.current !== PlayerState.Active}
+                                variant="secondary"
+                            >
+                                {status.current !== PlayerState.Active ? "Play/Pause" : isPlaying ? 'Pause' : 'Play'}
+                            </Button>
+                        </>
+                    )}
+                </CardContent>
+            </Card>
+        );
+    }
+
+    const component_appearanceCard = () => {
+        return (
+            <Card>
+                <CardHeader>
+                    <CardTitle>
+                        Appearance
+                    </CardTitle>
+                    <CardDescription>
+                        Customize the appearance of the animation.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="w-full">
+                        <h2 className="text-lg font-medium mb-2">Background Color</h2>
+                        <div className="flex justify-around w-full">
+                            <Button
+                                onClick={() => setBackground('transparent')}
+                                variant="ghost"
+                                size="xs"
+                            >
+                                Transparent
+                            </Button>
+                            <Button
+                                onClick={() => setBackground('black')}
+                                variant="ghost"
+                                size="xs"
+                            >
+                                Black
+                            </Button>
+                            <Button
+                                onClick={() => setBackground('white')}
+                                variant="ghost"
+                                size="xs"
+                            >
+                                White
+                            </Button>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+        );
     }
 
     return (
@@ -365,7 +560,7 @@ export default function Home() {
                         </div>
                     </section>
                 </div>
-                <div className="grid grid-cols-[1fr_300px]  gap-10">
+                <div className="grid grid-cols-[1fr_300px]  gap-4">
                     <div className="flex flex-col gap-8 col-start-1">
                         <Card>
                             <CardHeader>
@@ -391,144 +586,8 @@ export default function Home() {
                             </CardContent>
                         </Card>
                     </div>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Controls</CardTitle>
-                            <CardDescription>Interact with the animation.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="grid gap-4">
-                            <Tabs 
-                                value={controller.active}
-                                className="w-full flex flex-col items-center"
-                                onValueChange={(value) => setControllerState(value)}
-                            >
-                                <TabsList className="grid w-full grid-cols-2 mb-2">
-                                    <TabsTrigger value="animations">Animations</TabsTrigger>
-                                    <TabsTrigger value="state-machines">State Machines</TabsTrigger>
-                                </TabsList>
-                                <TabsContent value="animations" className="w-full">
-                                    <div className="w-full">
-                                        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
-                                            {animationList?.animations.map((animation, index) => (
-                                                <li key={index} className="w-full">
-                                                    <Button
-                                                        variant={animationList.active === animation ? "default" : "outline"} // ShadCN button variant
-                                                        onClick={() => setActiveAnimation(animation)}
-                                                        className="w-full"
-                                                        size="xs"
-                                                    >
-                                                        {animation}
-                                                    </Button>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                </TabsContent>
-                                <TabsContent value="state-machines" className="w-full flex flex-col items-center">
-                                    <Select
-                                        value={stateMachineList?.active}
-                                        onValueChange={(value) => setActiveStateMachine(value)}
-                                    >
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Select State Machine" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                <SelectLabel>Available State Machines</SelectLabel>
-                                                {stateMachineList?.stateMachines.map((stateMachine) => (
-                                                    <SelectItem key={stateMachine} value={stateMachine}>{stateMachine}</SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                    <div className="w-full mt-2">
-                                        {/* first show the trigger inputs */}
-                                        {stateMachineInputs?.some((input) => input.type === StateMachineInputType.Trigger) && (
-                                            <>
-                                                <h2 className="text-lg font-medium mb-2">Triggers</h2>
-                                                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
-                                                    {stateMachineInputs?.filter((input) => input.type === StateMachineInputType.Trigger).map((input, index) => (
-                                                        <li key={index} className="w-full">
-                                                            <Button
-                                                                variant="default"
-                                                                onClick={() => { 
-                                                                    console.log('input: ', input);
-                                                                    input.fire();
-                                                                }}
-                                                                className="w-full"
-                                                                size="xs"
-                                                            >
-                                                                {input.name}
-                                                            </Button>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </>
-                                        )}
-                                        {/* then show the boolean inputs */}
-                                        {stateMachineInputs.some((input) => input.type === StateMachineInputType.Boolean) && (
-                                            <>
-                                                <h2 className="text-lg font-medium mt-4 mb-2">Booleans</h2>
-                                                <ul className="flex flex-col gap-2 w-full">
-                                                    {stateMachineInputs?.filter((input) => input.type === StateMachineInputType.Boolean).map((input, index) => (
-                                                        <li key={index} className="w-full">
-                                                            <div className="flex items-center space-x-2">
-                                                                <Switch 
-                                                                    id={input.name} 
-                                                                    value={input.value}
-                                                                    onCheckedChange={(value) => {
-                                                                        console.log('Boolean input: ', input.name, ' New value: ', value);
-                                                                        input.value = value;
-                                                                    }}
-                                                                />
-                                                                <Label htmlFor={input.name}>{input.name}</Label>
-                                                            </div>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </>
-                                        )}
-                                        {/* then show the number inputs */}
-                                        {stateMachineInputs.some((input) => input.type === StateMachineInputType.Number) && (
-                                            <>
-                                                <h2 className="text-lg font-medium mt-4 mb-2">Numbers</h2>
-                                                <ul className="flex flex-col gap-2 w-full">
-                                                    {stateMachineInputs?.filter((input) => input.type === StateMachineInputType.Number).map((input, index) => (
-                                                        <li key={index} className="w-full">
-                                                            <div className="w-full max-w-sm">
-                                                                <Label htmlFor={input.name}>
-                                                                    {input.name}
-                                                                </Label>
-                                                                <Input 
-                                                                    type="number" 
-                                                                    id={input.name}
-                                                                    placeholder="Enter a number" 
-                                                                    value={input.value}
-                                                                    onChange={(e) => {
-                                                                        const newValue = parseFloat(e.target.value);
-                                                                        console.log('Number input: ', input.name, ' New value: ', newValue);
-                                                                        input.value = newValue;
-                                                                    }}
-                                                                />
-                                                            </div>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </>
-                                        )}
-                                    </div>
-                                </TabsContent>
-                            </Tabs>
-                            <Separator orientation="horizontal" />
-                            <Button
-                                onClick={() => { togglePlayback(); }}
-                                disabled={status.current !== PlayerState.Active}
-                                variant="secondary"
-                            >
-                                {status.current !== PlayerState.Active ? "Play/Pause" : isPlaying ? 'Pause' : 'Play'}
-                            </Button>
-                        </CardContent>
-                    </Card>
+                    { component_controlsCard() }
+                    { component_appearanceCard() }
                 </div>
             </div>
         </main>
