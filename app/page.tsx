@@ -1,8 +1,8 @@
 "use client";
 
 import { DragEvent, useState, useRef, useEffect } from 'react';
-import { Rive, Layout, EventType, Fit, Alignment, useStateMachineInput, StateMachineInputType } from '@rive-app/react-canvas';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, } from "@/components/ui/card"
+import { Rive, Layout, EventType, Fit, Alignment, StateMachineInputType, StateMachineInput } from '@rive-app/react-canvas';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue, } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
@@ -93,7 +93,7 @@ export default function Home() {
     const [riveAnimation, setRiveAnimation] = useState<Rive | null>(null);
     const [animationList, setAnimationList] = useState<RiveAnimations | null>(null);
     const [stateMachineList, setStateMachineList] = useState<RiveStateMachines | null>(null);
-    const [stateMachineInputs, setStateMachineInputs] = useState<any[]>([]);
+    const [stateMachineInputs, setStateMachineInputs] = useState<StateMachineInput[]>([]);
 
     const [isPlaying, setIsPlaying] = useState<boolean>(true);
     const [controller, setController] = useState<RiveController>({ active: "animations" });
@@ -473,7 +473,7 @@ export default function Home() {
                                                     <div className="flex items-center space-x-2">
                                                         <Switch 
                                                             id={input.name} 
-                                                            value={input.value}
+                                                            checked={input.value as boolean}
                                                             onCheckedChange={(value) => {
                                                                 console.log('Boolean input: ', input.name, ' New value: ', value);
                                                                 input.value = value;
@@ -501,7 +501,7 @@ export default function Home() {
                                                             type="number" 
                                                             id={input.name}
                                                             placeholder="Enter a number" 
-                                                            value={input.value}
+                                                            value={input.value as number}
                                                             onChange={(e) => {
                                                                 const newValue = parseFloat(e.target.value);
                                                                 console.log('Number input: ', input.name, ' New value: ', newValue);
