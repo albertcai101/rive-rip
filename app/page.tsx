@@ -532,7 +532,7 @@ export default function Home() {
 
     const component_appearanceCard = () => {
         return (
-            <Card className="w-[25%]">
+            <Card className="w-[25%] max-w-[250px]">
                 <CardHeader>
                     <CardTitle>
                         Appearance
@@ -544,29 +544,22 @@ export default function Home() {
                 <CardContent>
                     <div className="w-full">
                         <h2 className="text-lg font-medium mb-2">Background Color</h2>
-                        <div className="flex justify-around w-full">
-                            <Button
-                                onClick={() => setBackground('transparent')}
-                                variant="ghost"
-                                size="xs"
-                            >
-                                Transparent
-                            </Button>
-                            <Button
-                                onClick={() => setBackground('black')}
-                                variant="ghost"
-                                size="xs"
-                            >
-                                Black
-                            </Button>
-                            <Button
-                                onClick={() => setBackground('white')}
-                                variant="ghost"
-                                size="xs"
-                            >
-                                White
-                            </Button>
-                        </div>
+                        <Select
+                            value={background}
+                            onValueChange={(value) => setBackground(value as BackgroundColor)}
+                        >
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select Background" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectLabel>Available Backgrounds</SelectLabel>
+                                    <SelectItem value="transparent">Transparent</SelectItem>
+                                    <SelectItem value="white">White</SelectItem>
+                                    <SelectItem value="black">Black</SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
                     </div>
                 </CardContent>
             </Card>
@@ -605,15 +598,14 @@ export default function Home() {
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="flex flex-row justify-between items-center gap-12">
-                            <h2 className="text-lg font-medium mt-4 mb-2">Alignment</h2>
-                            {/* 3x3 grid of 12px squares */}
-                            <div className="grid grid-rows-[12px_12px_12px] grid-cols-[12px_12px_12px] gap-[2px]">
+                        <div className="flex flex-row justify-between flex-wrap">
+                            <h2 className="text-lg font-medium mt-4 pr-8">Alignment</h2>
+                            <div className="grid grid-rows-[36px_36px_36px] grid-cols-[36px_36px_36px] gap-2 mt-4 mb-2">
                                 {alignValues.map((_, index) => (
                                     <button
                                         key={`btn_${index}`}
                                         onClick={() => setAlignFitIndex({ ...alignFitIndex, alignment: index })}
-                                        className={`w-[12px] h-[12px] ${alignFitIndex.alignment === index ? 'bg-blue-500' : 'bg-gray-400'} hover:bg-blue-300 rounded-md transition-colors`}
+                                        className={`w-[36px] h-[36px] ${alignFitIndex.alignment === index ? 'bg-foreground' : 'bg-muted'} hover:bg-secondary-foreground rounded-lg transition-colors`}
                                     />
                                 ))}
                             </div>
