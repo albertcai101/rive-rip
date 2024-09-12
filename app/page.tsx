@@ -19,6 +19,28 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
+const fitValues: (keyof typeof Fit)[] = [
+    'Cover',
+    'Contain',
+    'Fill',
+    'FitWidth',
+    'FitHeight',
+    'None',
+    'ScaleDown',
+];
+
+const alignValues: (keyof typeof Alignment)[] = [
+    'TopLeft',
+    'TopCenter',
+    'TopRight',
+    'CenterLeft',
+    'Center',
+    'CenterRight',
+    'BottomLeft',
+    'BottomCenter',
+    'BottomRight',
+];
+
 enum PlayerState {
     Idle,
     Loading,
@@ -31,6 +53,11 @@ enum PlayerError {
 }
 
 type BackgroundColor = 'transparent' | 'white' | 'black'
+
+type AlignFitIndex = {
+    alignment: number;
+    fit: number;
+};
 
 type Dimensions = {
     width: number;
@@ -72,8 +99,13 @@ export default function Home() {
 
     const [isPlaying, setIsPlaying] = useState<boolean>(true);
     const [controller, setController] = useState<RiveController>({ active: "animations" });
-    const [background, setBackground] = useState<BackgroundColor>('transparent');
     const [dimensions, setDimensions] = useState<Dimensions>({ width: 0, height: 0 });
+
+    const [background, setBackground] = useState<BackgroundColor>('transparent');
+    const [alignFitIndex, setAlignFitIndex] = useState<AlignFitIndex>({
+        alignment: alignValues.indexOf('Center'),
+        fit: fitValues.indexOf('Cover'),
+    });
     
     useEffect(() => {
         if (!riveAnimation) return;
@@ -119,6 +151,15 @@ export default function Home() {
             if (status.current === PlayerState.Active && !stateMachineList) { getStateMachineList(); }
         }
     }, [status]);
+
+    useEffect(() => {
+        if (riveAnimation) {
+            riveAnimation.layout = new Layout({
+                fit: getFitValue(alignFitIndex),
+                alignment: getAlignmentValue(alignFitIndex),
+            });
+        }
+    }, [alignFitIndex]);
 
     useEffect(() => {
         if (canvasRef.current && dimensions && riveAnimation) {
@@ -263,8 +304,15 @@ export default function Home() {
         if (!stateMachines) return;
 
         setStateMachineList({ stateMachines, active: stateMachines[0] });
-
     }
+
+    const getFitValue = (alignFitIndex: AlignFitIndex) => {
+        return Fit[fitValues[alignFitIndex.fit]];
+    };
+
+    const getAlignmentValue = (alignFitIndex: AlignFitIndex) => {
+        return Alignment[alignValues[alignFitIndex.alignment]];
+    };
 
     const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
         setStatus({ ...status, hovering: true });
@@ -484,7 +532,7 @@ export default function Home() {
 
     const component_appearanceCard = () => {
         return (
-            <Card className="w-[300px]">
+            <Card className="w-[25%]">
                 <CardHeader>
                     <CardTitle>
                         Appearance
@@ -521,6 +569,13 @@ export default function Home() {
                         </div>
                     </div>
                 </CardContent>
+            </Card>
+        );
+    }
+
+    const component_layoutCard = () => {
+        return (
+            <Card className="w-[25%]">
             </Card>
         );
     }
@@ -588,8 +643,9 @@ export default function Home() {
                     </div>
                     { component_controlsCard() }
                     {/* 3 column grid that takes the whole width (both columns) */}
-                    <div className="grid grid-cols-3 gap-4 col-span-2">
+                    <div className="col-span-2 flex gap-4">
                         { component_appearanceCard() }
+                        { component_layoutCard() }
                     </div>
                 </div>
             </div>
