@@ -23,6 +23,8 @@
     "next": "14.2.9",
     "react": "^18",
     "react-dom": "^18",
+    "rehype-pretty-code": "^0.14.0",
+    "shiki": "^1.17.0",
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7"

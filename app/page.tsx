@@ -650,7 +650,7 @@ export default function Home() {
                                 </a>
                                 <a href="https://rive.app/preview/" target="_blank" rel="noopener noreferrer">
                                     <Button size="xs" variant="ghost">
-                                        Compare with Old Rive Preview
+                                        Use Old Rive Preview
                                     </Button>
                                 </a>
                             </div>
