@@ -22,6 +22,7 @@
         "clsx": "^2.1.1",
         "lucide-react": "^0.439.0",
         "next": "14.2.9",
+        "next-sitemap": "^4.2.3",
         "react": "^18",
         "react-dom": "^18",
         "sonner": "^1.5.0",
