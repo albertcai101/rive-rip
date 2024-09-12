@@ -2,6 +2,7 @@
 
 import { DragEvent, useState, useRef, useEffect } from 'react';
 import { Rive, Layout, EventType, Fit, Alignment, useStateMachineInput, StateMachineInputType } from '@rive-app/react-canvas';
+import rehypePrettyCode from "rehype-pretty-code";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue, } from "@/components/ui/select"
