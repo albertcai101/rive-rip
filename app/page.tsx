@@ -2,7 +2,6 @@
 
 import { DragEvent, useState, useRef, useEffect } from 'react';
 import { Rive, Layout, EventType, Fit, Alignment, useStateMachineInput, StateMachineInputType } from '@rive-app/react-canvas';
-import rehypePrettyCode from "rehype-pretty-code";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue, } from "@/components/ui/select"
@@ -628,35 +627,28 @@ export default function Home() {
             <Card className="w-full">
                 <CardHeader>
                     <CardTitle>
-                        Code
+                        Code Snippets
                     </CardTitle>
                     <CardDescription>
-                        View the code.
+                        Copy code for your project.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="w-full">
-                        <h2 className="text-lg font-medium mb-2">HTML</h2>
-                        <pre className="language-html">
-                            <code>
-                                {`<canvas id="rive-canvas"></canvas>`}
-                            </code>
-                        </pre>
-                        <h2 className="text-lg font-medium mt-4 mb-2">JavaScript</h2>
-                        <pre className="language-js">
-                            <code>
-                                {`const canvas = document.getElementById('rive-canvas');
-const rive = new Rive({
-    buffer: buffer,
-    canvas: canvas,
-    autoplay: true,
-    layout: new Layout({
-        fit: Fit.Cover,
-        alignment: Alignment.Center,
-    }),
-});`}
-                            </code>
-                        </pre>
+                            <Tabs defaultValue="web">
+                                <TabsList>
+                                    <TabsTrigger value="web">Web</TabsTrigger>
+                                    <TabsTrigger value="react">React</TabsTrigger>
+                                    <TabsTrigger value="flutter">Flutter</TabsTrigger>
+                                    <TabsTrigger value="apple">iOS/macOS</TabsTrigger>
+                                    <TabsTrigger value="android">Android</TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="web">Coming soon.</TabsContent>
+                                <TabsContent value="react">Coming soon.</TabsContent>
+                                <TabsContent value="flutter">Coming soon.</TabsContent>
+                                <TabsContent value="apple">Coming soon.</TabsContent>
+                                <TabsContent value="android">Coming soon.</TabsContent>
+                            </Tabs>
                     </div>
                 </CardContent>
             </Card>
