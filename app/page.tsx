@@ -538,7 +538,7 @@ export default function Home() {
                         Appearance
                     </CardTitle>
                     <CardDescription>
-                        Customize the appearance of the animation.
+                        Customize the appearance.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -576,6 +576,50 @@ export default function Home() {
     const component_layoutCard = () => {
         return (
             <Card className="w-[25%]">
+                <CardHeader>
+                    <CardTitle>
+                        Layout
+                    </CardTitle>
+                    <CardDescription>
+                        Adjust the layout of the animation.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="w-full">
+                        <div className="flex flex-row justify-between items-center gap-12">
+                            <h2 className="text-lg font-medium mb-2">Fit</h2>
+                            <Select
+                                value={fitValues[alignFitIndex.fit]}
+                                onValueChange={(value) => setAlignFitIndex({ ...alignFitIndex, fit: fitValues.indexOf(value as keyof typeof Fit) })}
+                            >
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select Fit" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        <SelectLabel>Available Fits</SelectLabel>
+                                        {fitValues.map((fit) => (
+                                            <SelectItem key={fit} value={fit}>{fit}</SelectItem>
+                                        ))}
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="flex flex-row justify-between items-center gap-12">
+                            <h2 className="text-lg font-medium mt-4 mb-2">Alignment</h2>
+                            {/* 3x3 grid of 12px squares */}
+                            <div className="grid grid-rows-[12px_12px_12px] grid-cols-[12px_12px_12px] gap-[2px]">
+                                {alignValues.map((_, index) => (
+                                    <button
+                                        key={`btn_${index}`}
+                                        onClick={() => setAlignFitIndex({ ...alignFitIndex, alignment: index })}
+                                        className={`w-[12px] h-[12px] ${alignFitIndex.alignment === index ? 'bg-blue-500' : 'bg-gray-400'} hover:bg-blue-300 rounded-md transition-colors`}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </CardContent>
             </Card>
         );
     }
