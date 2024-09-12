@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { customMetadataGenerator } from "@/lib/customMetadataGenerator";
 
 const geistSans = localFont({
     src: "./fonts/GeistVF.woff",
@@ -13,10 +14,9 @@ const geistMono = localFont({
     weight: "100 900",
 });
 
-export const metadata: Metadata = {
-    title: "Preview Rive - rive.rip",
-    description: "A better way to preview Rive animations and state machines.",
-};
+export const metadata: Metadata = customMetadataGenerator({
+    title: "Preview Rive",
+});
 
 export default function RootLayout({
     children,
