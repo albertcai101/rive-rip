@@ -665,7 +665,15 @@ export default function Home() {
                                     Preview
                                 </CardTitle>
                                 <CardDescription>
-                                    {filename ? `${filename} | (${fileSize})` : 'Choose a file to get started.'}
+                                    {filename ? (
+                                        <span>
+                                            {filename}
+                                            <span className="inline-block min-w-2">&nbsp;</span>
+                                            <span className="text-muted-foreground">({fileSize})</span>
+                                        </span>
+                                    ) : (
+                                        'Choose a file to get started.'
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
