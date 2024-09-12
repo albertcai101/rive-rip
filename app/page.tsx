@@ -484,7 +484,7 @@ export default function Home() {
 
     const component_appearanceCard = () => {
         return (
-            <Card>
+            <Card className="w-[300px]">
                 <CardHeader>
                     <CardTitle>
                         Appearance
@@ -587,7 +587,10 @@ export default function Home() {
                         </Card>
                     </div>
                     { component_controlsCard() }
-                    { component_appearanceCard() }
+                    {/* 3 column grid that takes the whole width (both columns) */}
+                    <div className="grid grid-cols-3 gap-4 col-span-2">
+                        { component_appearanceCard() }
+                    </div>
                 </div>
             </div>
         </main>
