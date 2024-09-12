@@ -676,7 +676,7 @@ export default function Home() {
                     <p className="max-w-2xl text-lg font-light text-foreground"> Test interactions through animations and the state machine.</p>
                     <div className="fex w-full items-center justify-start gap-2 py-2">
                         <div className="flex items-center gap-2">
-                            <a href="https://github.com/spellr-org/rive-rip" target="_blank" rel="noopener noreferrer">
+                            <a href="https://github.com/albertcai101/rive-rip" target="_blank" rel="noopener noreferrer">
                                 <Button size="xs">
                                     Star on GitHub
                                 </Button>
