@@ -477,7 +477,7 @@ export default function Home() {
                                                     <div className="flex items-center space-x-2">
                                                         <Switch 
                                                             id={input.name} 
-                                                            checked={input.value as boolean}
+                                                            // checked={input.value as boolean}
                                                             onCheckedChange={(value) => {
                                                                 console.log('Boolean input: ', input.name, ' New value: ', value);
                                                                 input.value = value;
@@ -505,7 +505,7 @@ export default function Home() {
                                                             type="number" 
                                                             id={input.name}
                                                             placeholder="Enter a number" 
-                                                            value={input.value as number}
+                                                            // value={input.value as number}
                                                             onChange={(e) => {
                                                                 const newValue = parseFloat(e.target.value);
                                                                 console.log('Number input: ', input.name, ' New value: ', newValue);
