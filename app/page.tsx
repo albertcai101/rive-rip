@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue, } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
+import { Input } from "@/components/ui/input"
 import { Toaster, toast } from "sonner";
 
 import { UploadIcon } from '@radix-ui/react-icons';
@@ -441,64 +442,65 @@ export default function Home() {
                                         </SelectContent>
                                     </Select>
                                     <div className="w-full mt-2">
-                                        <ul className="flex flex-col gap-2 w-full">
-                                            {stateMachineInputs?.map((input, index) => (
+                                        {/* first show the trigger inputs */}
+                                        <h2 className="text-lg font-medium mb-2">Triggers</h2>
+                                        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
+                                            {stateMachineInputs?.filter((input) => input.type === StateMachineInputType.Trigger).map((input, index) => (
                                                 <li key={index} className="w-full">
-                                                    {input.type === StateMachineInputType.Trigger && (
-                                                        <Button
-                                                            variant="default"
-                                                            onClick={() => { 
-                                                                console.log('input: ', input);
-                                                                input.fire();
+                                                    <Button
+                                                        variant="default"
+                                                        onClick={() => { 
+                                                            console.log('input: ', input);
+                                                            input.fire();
+                                                        }}
+                                                        className="w-full"
+                                                        size="xs"
+                                                    >
+                                                        {input.name}
+                                                    </Button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                        {/* then show the boolean inputs */}
+                                        <h2 className="text-lg font-medium mt-4 mb-2">Booleans</h2>
+                                        <ul className="flex flex-col gap-2 w-full">
+                                            {stateMachineInputs?.filter((input) => input.type === StateMachineInputType.Boolean).map((input, index) => (
+                                                <li key={index} className="w-full">
+                                                    <div className="flex items-center space-x-2">
+                                                        <Switch 
+                                                            id={input.name} 
+                                                            value={input.value}
+                                                            onCheckedChange={(value) => {
+                                                                console.log('Boolean input: ', input.name, ' New value: ', value);
+                                                                input.value = value;
                                                             }}
-                                                            className="w-full"
-                                                            size="xs"
-                                                        >
+                                                        />
+                                                        <Label htmlFor={input.name}>{input.name}</Label>
+                                                    </div>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                        {/* then show the number inputs */}
+                                        <h2 className="text-lg font-medium mt-4 mb-2">Numbers</h2>
+                                        <ul className="flex flex-col gap-2 w-full">
+                                            {stateMachineInputs?.filter((input) => input.type === StateMachineInputType.Number).map((input, index) => (
+                                                <li key={index} className="w-full">
+                                                    <div className="w-full max-w-sm">
+                                                        <Label htmlFor={input.name}>
                                                             {input.name}
-                                                        </Button>
-                                                    )}
-
-                                                    {input.type === StateMachineInputType.Boolean && (
-                                                        <div className="flex items-center space-x-2">
-                                                            <Switch 
-                                                                id={input.name} 
-                                                                value={input.value}
-                                                                onCheckedChange={(value) => {
-                                                                    console.log('Boolean input: ', input.name, ' New value: ', value);
-                                                                    input.value = value;
-                                                                }}
-                                                            />
-                                                            <Label htmlFor={input.name}>{input.name}</Label>
-                                                        </div>
-                                                        // <div className="flex items-center gap-2">
-                                                        //     <span>{input.name} (Boolean)</span>
-                                                        //         <input
-                                                        //         type="checkbox"
-                                                        //         checked={input.value}
-                                                        //         onChange={(e) => {
-                                                        //             const newValue = e.target.checked;
-                                                        //             console.log('Boolean input: ', input.name, ' New value: ', newValue);
-                                                        //             input.value = newValue;
-                                                        //         }}
-                                                        //     />
-                                                        // </div>
-                                                    )}
-
-                                                    {input.type === StateMachineInputType.Number && (
-                                                        <div className="flex flex-col gap-2">
-                                                            <span>{input.name} (Number)</span>
-                                                                <input
-                                                                type="number"
-                                                                value={input.value}
-                                                                onChange={(e) => {
-                                                                    const newValue = parseFloat(e.target.value);
-                                                                    console.log('Number input: ', input.name, ' New value: ', newValue);
-                                                                    input.value = newValue;
-                                                                }}
-                                                                className="w-full"
-                                                            />
-                                                            </div>
-                                                    )}
+                                                        </Label>
+                                                        <Input 
+                                                            type="number" 
+                                                            id={input.name}
+                                                            placeholder="Enter a number" 
+                                                            value={input.value}
+                                                            onChange={(e) => {
+                                                                const newValue = parseFloat(e.target.value);
+                                                                console.log('Number input: ', input.name, ' New value: ', newValue);
+                                                                input.value = newValue;
+                                                            }}
+                                                        />
+                                                    </div>
                                                 </li>
                                             ))}
                                         </ul>
