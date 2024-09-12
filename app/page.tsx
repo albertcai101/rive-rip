@@ -623,6 +623,46 @@ export default function Home() {
         );
     }
 
+    const component_codeCard = () => {
+        return (
+            <Card className="w-full">
+                <CardHeader>
+                    <CardTitle>
+                        Code
+                    </CardTitle>
+                    <CardDescription>
+                        View the code.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="w-full">
+                        <h2 className="text-lg font-medium mb-2">HTML</h2>
+                        <pre className="language-html">
+                            <code>
+                                {`<canvas id="rive-canvas"></canvas>`}
+                            </code>
+                        </pre>
+                        <h2 className="text-lg font-medium mt-4 mb-2">JavaScript</h2>
+                        <pre className="language-js">
+                            <code>
+                                {`const canvas = document.getElementById('rive-canvas');
+const rive = new Rive({
+    buffer: buffer,
+    canvas: canvas,
+    autoplay: true,
+    layout: new Layout({
+        fit: Fit.Cover,
+        alignment: Alignment.Center,
+    }),
+});`}
+                            </code>
+                        </pre>
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
+
     return (
         <main className="flex-1 font-[family-name:var(--font-geist-sans)]">
             <Toaster richColors visibleToasts={10}/>
@@ -697,6 +737,7 @@ export default function Home() {
                     <div className="col-span-2 flex gap-4">
                         { component_appearanceCard() }
                         { component_layoutCard() }
+                        { component_codeCard() }
                     </div>
                 </div>
             </div>
