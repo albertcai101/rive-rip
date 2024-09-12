@@ -10,11 +10,8 @@ import { Switch } from "@/components/ui/switch"
 import { Input } from "@/components/ui/input"
 import { Toaster, toast } from "sonner";
 
-import { UploadIcon } from '@radix-ui/react-icons';
 import { Upload } from 'lucide-react';
-import { BookOpen } from 'lucide-react';
 import { LaptopIcon } from '@radix-ui/react-icons';
-import { ReaderIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
@@ -92,6 +89,7 @@ export default function Home() {
 
     const [status, setStatus] = useState<Status>({ current: PlayerState.Idle, hovering: false });
     const [filename, setFilename] = useState<string | null>(null);
+    const [fileSize, setFileSize] = useState<string | null>(null);
     const [riveAnimation, setRiveAnimation] = useState<Rive | null>(null);
     const [animationList, setAnimationList] = useState<RiveAnimations | null>(null);
     const [stateMachineList, setStateMachineList] = useState<RiveStateMachines | null>(null);
@@ -225,12 +223,20 @@ export default function Home() {
 
     const load = (file: File) => {
         setFilename(file.name);
+        setFileSize(formatFileSize(file.size));
         const reader = new FileReader();
         reader.onload = () => {
             setAnimationWithBuffer(reader.result);
         };
         reader.readAsArrayBuffer(file);
     };
+
+    const formatFileSize = (bytes: number): string => {
+        if (bytes < 1024) return bytes + ' bytes';
+        else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+        else return (bytes / 1048576).toFixed(1) + ' MB';
+    };
+
 
     const reset = () => {
         setIsPlaying(true);
@@ -659,7 +665,7 @@ export default function Home() {
                                     Preview
                                 </CardTitle>
                                 <CardDescription>
-                                    {filename ? `${filename}` : 'Choose a file to get started.'}
+                                    {filename ? `${filename} | (${fileSize})` : 'Choose a file to get started.'}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
