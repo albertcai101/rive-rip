@@ -352,13 +352,13 @@ export default function Home() {
 
     const clearCanvas = () => {
         const canvas = canvasRef.current;
-        if (!canvas) {
-            return;
-        }
-        riveAnimation?.stop();
-        const ctx = canvas.getContext('2d', { alpha: false });
-        ctx!.clearRect(0, 0, canvas.width, canvas.height);
-    };
+        if (!canvas || !canvas.isConnected) return;
+      
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+      
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      };
 
     const shouldDisplayCanvas = () => [PlayerState.Active, PlayerState.Loading].includes(status.current);
 
