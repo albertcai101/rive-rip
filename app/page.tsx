@@ -1,7 +1,7 @@
 "use client";
 
 import { DragEvent, useState, useRef, useEffect } from 'react';
-import { Rive, Layout, EventType, Fit, Alignment, StateMachineInputType, StateMachineInput } from '@rive-app/react-canvas';
+import { EventType,Rive, Fit, Alignment, Layout, StateMachineInput, StateMachineInputType } from '@rive-app/webgl2'; 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue, } from "@/components/ui/select"
