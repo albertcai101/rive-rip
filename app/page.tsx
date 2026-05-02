@@ -1,7 +1,7 @@
 "use client";
 
 import { DragEvent, useState, useRef, useEffect } from 'react';
-import { Rive, Layout, EventType, Fit, Alignment, StateMachineInputType, StateMachineInput } from '@rive-app/react-canvas';
+import { EventType,Rive, Fit, Alignment, Layout, StateMachineInput, StateMachineInputType } from '@rive-app/webgl2'; 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue, } from "@/components/ui/select"
@@ -352,13 +352,13 @@ export default function Home() {
 
     const clearCanvas = () => {
         const canvas = canvasRef.current;
-        if (!canvas) {
-            return;
-        }
-        riveAnimation?.stop();
-        const ctx = canvas.getContext('2d', { alpha: false });
-        ctx!.clearRect(0, 0, canvas.width, canvas.height);
-    };
+        if (!canvas || !canvas.isConnected) return;
+      
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+      
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      };
 
     const shouldDisplayCanvas = () => [PlayerState.Active, PlayerState.Loading].includes(status.current);
 
